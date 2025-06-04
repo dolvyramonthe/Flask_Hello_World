@@ -1,0 +1,27 @@
+name: Preview temporaire Flask
+
+on: workflow_dispatch
+
+jobs:
+  build-and-preview:
+    runs-on: ubuntu-latest
+
+    steps:
+      - name: Récupération du code
+        uses: actions/checkout@v2
+
+      - name: Installer Docker
+        run: sudo apt-get update && sudo apt-get install -y docker.io
+
+      - name: Build Docker image
+        run: docker build -t flask-preview .
+
+      - name: Run container in background
+        run: docker run -d -p 5000:5000 --name flask-container flask-preview
+
+      - name: Lancer Ngrok
+        uses: l13t/ngrok-tunnel-action@v1
+        with:
+          protocol: http
+          port: 5000
+          timeout: 120
